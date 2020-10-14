@@ -17,7 +17,7 @@ EasyDecorator is a module that bring's in a Python-like method decorator pattern
 `$ gem install easy_decorator`
 
 ### Gemfile
-```
+```ruby
 # ./Gemfile
 
 source 'https://rubygems.org`
@@ -26,7 +26,7 @@ gem 'easy_decorator', '~> 0.1.0'
 ```
 # Usage
 ### Include Module
-```
+```ruby
 # ./my_class.rb
 class MyClass
   include EasyDecorator
@@ -34,23 +34,23 @@ end
 ```
 ### Define Decorator
 A decorator should be defined as a method taking in a `method_name` and splat `*args`. Then you just write your code and call the inner function via `send(method_name, *args)`.
-```
+```ruby
 def my_decorator(method_name, *args)
-  ...
+  # code here
   send(method_name, *args)
-  ...
+  # code here
 end
 ```
 ### Decorating Methods
-```
+```ruby
 decorate(:my_decorator, :my_method)
 def my_method(a, b)
-  ...
+  # code here
 end
 ```
 
 ### Example
-```
+```ruby
 # ./calculator.rb
 
 class Calculator
