@@ -21,8 +21,8 @@ EasyDecorator is a module that bring's in a Python-like method decorator pattern
 # ./Gemfile
 
 source 'https://rubygems.org`
-...
-gem 'easy_decorator', '~> 0.1.0'
+# ...
+gem 'easy_decorator', '~> 0.2.0'
 ```
 # Usage
 ### Include Module
@@ -33,20 +33,37 @@ class MyClass
 end
 ```
 ### Define Decorator
-A decorator should be defined as a method taking in a `method_name` and splat `*args`. Then you just write your code and call the inner function via `send(method_name, *args)`.
+A decorator should be defined as a method with an inner wrapper. Within the wrapper you can call the passed method via `func.call(*args)`.
+
 ```ruby
-def my_decorator(method_name, *args)
-  # code here
-  send(method_name, *args)
-  # code here
+def my_decorator(func, *args)
+  wrapper do 
+    # code here
+    func.call(*args)
+    # code here
+  end
 end
 ```
+\* `wrapper` is essentially syntactic sugar for a proc.
+
 ### Decorating Methods
 ```ruby
-decorate(:my_decorator, :my_method)
+decorate(:my_method, :my_decorator)
 def my_method(a, b)
   # code here
 end
+```
+You can apply multiple decorators to a method, which will applies from last to first declared.
+
+```ruby
+decorate(:my_method, :outer_decorator)
+decorate(:my_method, :inner_decorator)
+def my_method(*args)
+  # ...
+end
+
+# is essentially the same as:
+outer_decorator(inner_decorator(public_method(:my_method))).call(*args)
 ```
 
 ### Example
@@ -58,19 +75,21 @@ class Calculator
   include EasyDecorator
 
   # define decorator
-  def time_calculation(method_name, *args)
-    logger.info("Timing #{method_name}...")
-    start_time = Time.now
-    # call inner method
-    result = send(method_name, *args)
-    end_time = Time.now
-    logger.info("Processing Time: #{end_time - start_time}")
-  
-    return result
+  def calculate_time(func, *args)
+    wrap do
+      logger.info("Timing #{method_name}...")
+      start_time = Time.now
+      # call inner method
+      result = func.call(*args)
+      end_time = Time.now
+      logger.info("Processing Time: #{end_time - start_time}")
+
+      result
+    end
   end
 
   # decorate method
-  decorate(:time_calculation, :add_numbers)
+  decorate(:add_numbers, :calculate_time)
   def add_numbers(a, b)
     return a + b
   end
