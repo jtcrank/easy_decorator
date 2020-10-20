@@ -22,7 +22,7 @@ EasyDecorator is a module that bring's in a Python-like method decorator pattern
 
 source 'https://rubygems.org`
 # ...
-gem 'easy_decorator', '~> 0.2.0'
+gem 'easy_decorator', '~> 0.2.1'
 ```
 # Usage
 ### Include Module
@@ -48,16 +48,17 @@ end
 
 ### Decorating Methods
 ```ruby
-decorate(:my_method, :my_decorator)
+decorate(:my_decorator)
 def my_method(a, b)
   # code here
 end
 ```
 You can apply multiple decorators to a method, which will applies from last to first declared.
+Decorators must be declared directly above method definition.
 
 ```ruby
-decorate(:my_method, :outer_decorator)
-decorate(:my_method, :inner_decorator)
+decorate(:outer_decorator)
+decorate(:inner_decorator)
 def my_method(*args)
   # ...
 end
@@ -89,7 +90,7 @@ class Calculator
   end
 
   # decorate method
-  decorate(:add_numbers, :calculate_time)
+  decorate(:calculate_time)
   def add_numbers(a, b)
     return a + b
   end
